@@ -58,6 +58,7 @@ if(!class_exists('BC_CF7_Bootstrap_4')){
     		remove_action('wpcf7_init', 'wpcf7_add_form_tag_file');
     		remove_action('wpcf7_init', 'wpcf7_add_form_tag_number');
     		remove_action('wpcf7_init', 'wpcf7_add_form_tag_select');
+            remove_action('wpcf7_init', 'wpcf7_add_form_tag_submit');
     		remove_action('wpcf7_init', 'wpcf7_add_form_tag_text');
     		remove_action('wpcf7_init', 'wpcf7_add_form_tag_textarea');
         }
@@ -127,6 +128,16 @@ if(!class_exists('BC_CF7_Bootstrap_4')){
             $wrapper = $html->find('.wpcf7-form-control-wrap', 0);
             $select = $wrapper->find('select', 0);
             $select->addClass('custom-select');
+            return $html;
+        }
+
+    	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    	private function submit($html = '', $tag = null){
+            $html = str_get_html($html);
+            $submit = $html->find('input', 0);
+            $submit->addClass('btn');
+            $submit->outertext = '<span class="bc-cf7-submit-wrap">' . $submit->outertext . '</span>';
             return $html;
         }
 
@@ -211,6 +222,10 @@ if(!class_exists('BC_CF7_Bootstrap_4')){
         		'name-attr' => true,
                 'selectable-values' => true,
         	]);
+            wpcf7_add_form_tag(['submit'], function($tag){
+                $html = wpcf7_submit_form_tag_handler($tag);
+                return $this->submit($html, $tag);
+            });
 			wpcf7_add_form_tag(['email', 'email*', 'password', 'password*', 'tel', 'tel*', 'text', 'text*', 'url', 'url*'], function($tag){
                 $html = wpcf7_text_form_tag_handler($tag);
                 return $this->text($html, $tag);
