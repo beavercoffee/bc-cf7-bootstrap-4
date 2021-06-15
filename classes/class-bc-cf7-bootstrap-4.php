@@ -44,6 +44,7 @@ if(!class_exists('BC_CF7_Bootstrap_4')){
 
     	private function __construct($file = ''){
             $this->file = $file;
+            add_action('plugins_loaded', [$this, 'plugins_loaded']);
             add_action('wpcf7_init', [$this, 'wpcf7_init']);
             add_action('wpcf7_enqueue_scripts', [$this, 'wpcf7_enqueue_scripts']);
             add_action('wpcf7_enqueue_styles', [$this, 'wpcf7_enqueue_styles']);
@@ -64,101 +65,88 @@ if(!class_exists('BC_CF7_Bootstrap_4')){
     	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     	private function checkbox($html = '', $tag = null){
-            if(function_exists('str_get_html')){
-                $html = str_get_html($html);
-                $type = 'checkbox';
-                if(in_array($tag->basetype, ['checkbox', 'radio'])){
-                    $type = $tag->basetype;
-                }
-                $inline = $tag->has_option('inline');
-    			foreach($html->find('.wpcf7-list-item') as $li){
-    				$li->addClass('custom-control custom-' . $type);
-    				if($inline){
-                        $li->addClass('custom-control-inline');
-                    }
-    				$input = $li->find('input', 0);
-    				$input->addClass('custom-control-input');
-    				$input->id = $tag->name . '_' . str_replace('-', '_', sanitize_title($input->value));
-    				$label = $li->find('.wpcf7-list-item-label', 0);
-    				$label->addClass('custom-control-label');
-    				$label->for = $input->id;
-    				$label->tag = 'label';
-    				$li->innertext = $input->outertext . $label->outertext;
-    			}
+            $html = str_get_html($html);
+            $type = 'checkbox';
+            if(in_array($tag->basetype, ['checkbox', 'radio'])){
+                $type = $tag->basetype;
             }
+            $inline = $tag->has_option('inline');
+			foreach($html->find('.wpcf7-list-item') as $li){
+				$li->addClass('custom-control custom-' . $type);
+				if($inline){
+                    $li->addClass('custom-control-inline');
+                }
+				$input = $li->find('input', 0);
+				$input->addClass('custom-control-input');
+				$input->id = $tag->name . '_' . str_replace('-', '_', sanitize_title($input->value));
+				$label = $li->find('.wpcf7-list-item-label', 0);
+				$label->addClass('custom-control-label');
+				$label->for = $input->id;
+				$label->tag = 'label';
+				$li->innertext = $input->outertext . $label->outertext;
+			}
             return $html;
         }
 
     	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     	private function file($html = '', $tag = null){
-            if(function_exists('str_get_html')){
-                $html = str_get_html($html);
-                $wrapper = $html->find('.wpcf7-form-control-wrap', 0);
-                $wrapper->addClass('custom-file');
-                $input = $wrapper->find('input', 0);
-                $input->addClass('custom-file-input');
-    			if(!isset($input->id)){
-    				$input->id = $tag->name;
-    			}
-                $multiple = $tag->has_option('multiple');
-    			if($multiple){
-    				$input->multiple = 'multiple';
-    				$input->name = $input->name . '[]';
-    			}
-                $browse = __('Select');
-                $label = __('Select Files');
-                $input->outertext = $input->outertext . '<label class="custom-file-label" for="' . $input->id . '" data-browse="' . $browse . '">' . $label . '</label>';
+            $html = str_get_html($html);
+            $wrapper = $html->find('.wpcf7-form-control-wrap', 0);
+            $wrapper->addClass('custom-file');
+            $input = $wrapper->find('input', 0);
+            $input->addClass('custom-file-input');
+            if(!isset($input->id)){
+                $input->id = $tag->name;
             }
+            $multiple = $tag->has_option('multiple');
+            if($multiple){
+                $input->multiple = 'multiple';
+                $input->name = $input->name . '[]';
+            }
+            $browse = __('Select');
+            $label = __('Select Files');
+            $input->outertext = $input->outertext . '<label class="custom-file-label" for="' . $input->id . '" data-browse="' . $browse . '">' . $label . '</label>';
             return $html;
         }
 
     	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     	private function range($html = '', $tag = null){
-            if(function_exists('str_get_html')){
-                $html = str_get_html($html);
-                $wrapper = $html->find('.wpcf7-form-control-wrap', 0);
-                $range = $wrapper->find('range', 0);
-                $range->addClass('form-control-range');
-            }
+            $html = str_get_html($html);
+            $wrapper = $html->find('.wpcf7-form-control-wrap', 0);
+            $range = $wrapper->find('range', 0);
+            $range->addClass('form-control-range');
             return $html;
         }
 
     	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     	private function select($html = '', $tag = null){
-            if(function_exists('str_get_html')){
-                $html = str_get_html($html);
-                $wrapper = $html->find('.wpcf7-form-control-wrap', 0);
-    			$select = $wrapper->find('select', 0);
-    			$select->addClass('custom-select');
-                return $html;
-            }
+            $html = str_get_html($html);
+            $wrapper = $html->find('.wpcf7-form-control-wrap', 0);
+            $select = $wrapper->find('select', 0);
+            $select->addClass('custom-select');
             return $html;
         }
 
     	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     	private function text($html = '', $tag = null){
-            if(function_exists('str_get_html')){
-                $html = str_get_html($html);
-                $wrapper = $html->find('.wpcf7-form-control-wrap', 0);
-    			$input = $wrapper->find('input', 0);
-    			$input->addClass('form-control');
-            }
+            $html = str_get_html($html);
+            $wrapper = $html->find('.wpcf7-form-control-wrap', 0);
+            $input = $wrapper->find('input', 0);
+            $input->addClass('form-control');
             return $html;
         }
 
     	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     	private function textarea($html = '', $tag = null){
-            if(function_exists('str_get_html')){
-                $html = str_get_html($html);
-                $wrapper = $html->find('.wpcf7-form-control-wrap', 0);
-    			$textarea = $wrapper->find('textarea', 0);
-    			$textarea->addClass('form-control');
-            }
+            $html = str_get_html($html);
+            $wrapper = $html->find('.wpcf7-form-control-wrap', 0);
+            $textarea = $wrapper->find('textarea', 0);
+            $textarea->addClass('form-control');
             return $html;
         }
 
@@ -167,6 +155,14 @@ if(!class_exists('BC_CF7_Bootstrap_4')){
     	// public
     	//
     	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        public function plugins_loaded(){
+            if(!function_exists('str_get_html')){
+                require_once(plugin_dir_path($this->file) . 'includes/simplehtmldom-1.9.1/simple_html_dom.php');
+            }
+        }
+
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         public function wpcf7_init(){
             wpcf7_add_form_tag('acceptance', function($tag){
