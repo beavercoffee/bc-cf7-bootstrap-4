@@ -137,7 +137,7 @@ if(!class_exists('BC_CF7_Bootstrap_4')){
             $html = str_get_html($html);
             $submit = $html->find('input', 0);
             $submit->addClass('btn');
-            $submit->outertext = '<span class="bc-cf7-submit-wrap">' . $submit->outertext . '</span>';
+            $submit->outertext = '<span class="d-flex align-items-center">' . $submit->outertext . '</span>';
             return $html;
         }
 
