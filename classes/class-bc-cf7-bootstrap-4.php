@@ -17,14 +17,17 @@ if(!class_exists('BC_CF7_Bootstrap_4')){
     	//
     	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    	public static function get_instance($file = ''){
-            if(null === self::$instance){
-                if(@is_file($file)){
-                    self::$instance = new self($file);
-                } else {
-                    wp_die(__('File doesn&#8217;t exist?'));
-                }
+        public static function get_instance($file = ''){
+            if(null !== self::$instance){
+                return self::$instance;
             }
+            if('' === $file){
+                wp_die(__('File doesn&#8217;t exist?'));
+            }
+            if(!is_file($file)){
+                wp_die(sprintf(__('File &#8220;%s&#8221; doesn&#8217;t exist?'), $file));
+            }
+            self::$instance = new self($file);
             return self::$instance;
     	}
 
@@ -45,28 +48,12 @@ if(!class_exists('BC_CF7_Bootstrap_4')){
     	private function __construct($file = ''){
             $this->file = $file;
             add_action('plugins_loaded', [$this, 'plugins_loaded']);
-            add_action('wpcf7_init', [$this, 'wpcf7_init']);
-            add_action('wpcf7_enqueue_scripts', [$this, 'wpcf7_enqueue_scripts']);
-            add_action('wpcf7_enqueue_styles', [$this, 'wpcf7_enqueue_styles']);
-            add_filter('wpcf7_autop_or_not', '__return_false');
-            add_filter('wpcf7_validate_password', [$this, 'wpcf7_password_validation_filter'], 10, 2);
-            add_filter('wpcf7_validate_password*', [$this, 'wpcf7_password_validation_filter'], 10, 2);
-            add_filter('wpcf7_validate_radio*', 'wpcf7_checkbox_validation_filter', 10, 2);
-            remove_action('wpcf7_init', 'wpcf7_add_form_tag_acceptance');
-    		remove_action('wpcf7_init', 'wpcf7_add_form_tag_checkbox');
-    		remove_action('wpcf7_init', 'wpcf7_add_form_tag_date');
-    		remove_action('wpcf7_init', 'wpcf7_add_form_tag_file');
-    		remove_action('wpcf7_init', 'wpcf7_add_form_tag_number');
-    		remove_action('wpcf7_init', 'wpcf7_add_form_tag_select');
-            remove_action('wpcf7_init', 'wpcf7_add_form_tag_submit');
-    		remove_action('wpcf7_init', 'wpcf7_add_form_tag_text');
-    		remove_action('wpcf7_init', 'wpcf7_add_form_tag_textarea');
         }
 
     	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     	private function checkbox($html = '', $tag = null){
-            $html = str_get_html($html);
+            $html = bc_str_get_html($html);
             $type = 'checkbox';
             if(in_array($tag->basetype, ['checkbox', 'radio'])){
                 $type = $tag->basetype;
@@ -92,7 +79,7 @@ if(!class_exists('BC_CF7_Bootstrap_4')){
     	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     	private function file($html = '', $tag = null){
-            $html = str_get_html($html);
+            $html = bc_str_get_html($html);
             $wrapper = $html->find('.wpcf7-form-control-wrap', 0);
             $wrapper->addClass('custom-file');
             $input = $wrapper->find('input', 0);
@@ -114,7 +101,7 @@ if(!class_exists('BC_CF7_Bootstrap_4')){
     	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     	private function range($html = '', $tag = null){
-            $html = str_get_html($html);
+            $html = bc_str_get_html($html);
             $wrapper = $html->find('.wpcf7-form-control-wrap', 0);
             $range = $wrapper->find('range', 0);
             $range->addClass('form-control-range');
@@ -124,7 +111,7 @@ if(!class_exists('BC_CF7_Bootstrap_4')){
     	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     	private function select($html = '', $tag = null){
-            $html = str_get_html($html);
+            $html = bc_str_get_html($html);
             $wrapper = $html->find('.wpcf7-form-control-wrap', 0);
             $select = $wrapper->find('select', 0);
             $select->addClass('custom-select');
@@ -134,7 +121,7 @@ if(!class_exists('BC_CF7_Bootstrap_4')){
     	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     	private function submit($html = '', $tag = null){
-            $html = str_get_html($html);
+            $html = bc_str_get_html($html);
             $submit = $html->find('input', 0);
             $submit->addClass('btn');
             $submit->outertext = '<span class="bc-submit-wrap d-flex align-items-center">' . $submit->outertext . '</span>';
@@ -144,7 +131,7 @@ if(!class_exists('BC_CF7_Bootstrap_4')){
     	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     	private function text($html = '', $tag = null){
-            $html = str_get_html($html);
+            $html = bc_str_get_html($html);
             $wrapper = $html->find('.wpcf7-form-control-wrap', 0);
             $input = $wrapper->find('input', 0);
             $input->addClass('form-control');
@@ -154,7 +141,7 @@ if(!class_exists('BC_CF7_Bootstrap_4')){
     	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     	private function textarea($html = '', $tag = null){
-            $html = str_get_html($html);
+            $html = bc_str_get_html($html);
             $wrapper = $html->find('.wpcf7-form-control-wrap', 0);
             $textarea = $wrapper->find('textarea', 0);
             $textarea->addClass('form-control');
@@ -168,9 +155,31 @@ if(!class_exists('BC_CF7_Bootstrap_4')){
     	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         public function plugins_loaded(){
-            if(!function_exists('str_get_html')){
-                require_once(plugin_dir_path($this->file) . 'includes/simplehtmldom-1.9.1/simple_html_dom.php');
+            if(!defined('BC_FUNCTIONS')){
+        		return;
+        	}
+            if(!defined('WPCF7_VERSION')){
+        		return;
+        	}
+            add_action('plugins_loaded', [$this, 'plugins_loaded']);
+            add_action('wpcf7_init', [$this, 'wpcf7_init']);
+            add_action('wpcf7_enqueue_scripts', [$this, 'wpcf7_enqueue_scripts']);
+            add_action('wpcf7_enqueue_styles', [$this, 'wpcf7_enqueue_styles']);
+            if(!has_filter('wpcf7_autop_or_not', '__return_false')){
+                add_filter('wpcf7_autop_or_not', '__return_false');
             }
+            add_filter('wpcf7_validate_password', [$this, 'wpcf7_password_validation_filter'], 10, 2);
+            add_filter('wpcf7_validate_password*', [$this, 'wpcf7_password_validation_filter'], 10, 2);
+            add_filter('wpcf7_validate_radio*', 'wpcf7_checkbox_validation_filter', 10, 2);
+            remove_action('wpcf7_init', 'wpcf7_add_form_tag_acceptance');
+    		remove_action('wpcf7_init', 'wpcf7_add_form_tag_checkbox');
+    		remove_action('wpcf7_init', 'wpcf7_add_form_tag_date');
+    		remove_action('wpcf7_init', 'wpcf7_add_form_tag_file');
+    		remove_action('wpcf7_init', 'wpcf7_add_form_tag_number');
+    		remove_action('wpcf7_init', 'wpcf7_add_form_tag_select');
+            remove_action('wpcf7_init', 'wpcf7_add_form_tag_submit');
+    		remove_action('wpcf7_init', 'wpcf7_add_form_tag_text');
+    		remove_action('wpcf7_init', 'wpcf7_add_form_tag_textarea');
         }
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
