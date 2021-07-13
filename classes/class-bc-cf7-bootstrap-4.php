@@ -180,6 +180,7 @@ if(!class_exists('BC_CF7_Bootstrap_4')){
             remove_action('wpcf7_init', 'wpcf7_add_form_tag_submit');
     		remove_action('wpcf7_init', 'wpcf7_add_form_tag_text');
     		remove_action('wpcf7_init', 'wpcf7_add_form_tag_textarea');
+            bc_build_update_checker('https://github.com/beavercoffee/bc-cf7-bootstrap-4', $this->file, 'bc-cf7-bootstrap-4');
         }
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
