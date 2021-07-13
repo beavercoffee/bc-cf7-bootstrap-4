@@ -207,6 +207,7 @@ if(!class_exists('BC_CF7_Bootstrap_4')){
                     $html = $this->textarea($html, $tag);
                     break;
             }
+            return $html;
         }
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
