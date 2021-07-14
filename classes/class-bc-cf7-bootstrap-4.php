@@ -166,7 +166,7 @@ if(!class_exists('BC_CF7_Bootstrap_4')){
             }
             add_action('wpcf7_enqueue_scripts', [$this, 'wpcf7_enqueue_scripts']);
             add_action('wpcf7_enqueue_styles', [$this, 'wpcf7_enqueue_styles']);
-            add_filter('bc_cf7_field', [$this, 'bc_cf7_field'], 10, 4);
+            add_filter('bc_cf7_field', [$this, 'bc_cf7_field'], 10, 5);
             if(!has_filter('wpcf7_autop_or_not', '__return_false')){
                 add_filter('wpcf7_autop_or_not', '__return_false');
             }
@@ -175,12 +175,12 @@ if(!class_exists('BC_CF7_Bootstrap_4')){
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-        public function bc_cf7_field($html, $tag, $type, $basetype){
+        public function bc_cf7_field($html, $tag, $type, $basetype, $original_html){
             switch($type){
                 case 'acceptance':
                 case 'checkbox':
                 case 'radio':
-                    $html = $this->checkbox($html, $tag);
+                    $html = $this->checkbox($original_html, $tag);
                     break;
                 case 'date':
                 case 'email':
@@ -189,22 +189,22 @@ if(!class_exists('BC_CF7_Bootstrap_4')){
                 case 'tel':
                 case 'text':
                 case 'url':
-                    $html = $this->text($html, $tag);
+                    $html = $this->text($original_html, $tag);
                     break;
                 case 'file':
-                    $html = $this->file($html, $tag);
+                    $html = $this->file($original_html, $tag);
                     break;
                 case 'range':
-                    $html = $this->range($html, $tag);
+                    $html = $this->range($original_html, $tag);
                     break;
                 case 'select':
-                    $html = $this->select($html, $tag);
+                    $html = $this->select($original_html, $tag);
                     break;
                 case 'submit':
-                    $html = $this->submit($html, $tag);
+                    $html = $this->submit($original_html, $tag);
                     break;
                 case 'textarea':
-                    $html = $this->textarea($html, $tag);
+                    $html = $this->textarea($original_html, $tag);
                     break;
             }
             return $html;
