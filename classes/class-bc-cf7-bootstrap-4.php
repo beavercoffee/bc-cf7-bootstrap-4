@@ -60,6 +60,12 @@ if(!class_exists('BC_CF7_Bootstrap_4')){
             }
             $inline = $tag->has_option('inline');
 			foreach($html->find('.wpcf7-list-item') as $li){
+                $freetext = '';
+				if($li->hasClass('has-free-text')){
+					$freetext = $li->find('.wpcf7-free-text', 0);
+					$freetext->addClass('form-control mt-1');
+                    $freetext->value = apply_filters('bc_cf7_free_text_value', (string) $freetext->value, $tag);
+				}
 				$li->addClass('custom-control custom-' . $type);
 				if($inline){
                     $li->addClass('custom-control-inline');
@@ -71,7 +77,7 @@ if(!class_exists('BC_CF7_Bootstrap_4')){
 				$label->addClass('custom-control-label');
 				$label->for = $input->id;
 				$label->tag = 'label';
-				$li->innertext = $input->outertext . $label->outertext;
+				$li->innertext = $input->outertext . $label->outertext . $freetext;
 			}
             return $html;
         }
