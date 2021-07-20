@@ -164,9 +164,6 @@ if(!class_exists('BC_CF7_Bootstrap_4')){
             add_action('wpcf7_enqueue_scripts', [$this, 'wpcf7_enqueue_scripts']);
             add_action('wpcf7_enqueue_styles', [$this, 'wpcf7_enqueue_styles']);
             add_filter('bc_cf7_field', [$this, 'bc_cf7_field'], 10, 5);
-            if(!has_filter('wpcf7_autop_or_not', '__return_false')){
-                add_filter('wpcf7_autop_or_not', '__return_false');
-            }
             bc_build_update_checker('https://github.com/beavercoffee/bc-cf7-bootstrap-4', $this->file, 'bc-cf7-bootstrap-4');
             do_action('bc_cf7_bootstrap_4_loaded');
         }
